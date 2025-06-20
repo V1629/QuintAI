@@ -1,0 +1,12 @@
+langchain
+langgraph
+ipykernel
+langchain-community
+pypdf
+chromadb
+langchain_groq
+wikipedia
+google-generativeai
+pinecone
+sentence-transformers
+pinecone-text

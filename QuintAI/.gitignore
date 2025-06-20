@@ -1,0 +1,7 @@
+env/
+.env
+__pycache__/
+*.pyc
+bm25_values.json
+*.pdf
+
