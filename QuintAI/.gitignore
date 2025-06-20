@@ -4,4 +4,5 @@ __pycache__/
 *.pyc
 bm25_values.json
 *.pdf
+chroma_db/
 

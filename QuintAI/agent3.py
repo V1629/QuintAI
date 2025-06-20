@@ -18,8 +18,11 @@ llm
 
 from langchain import hub
 #Get the prompt to use - you can modify this!
-prompt = hub.pull("hwchase17/openai-functions-agent")
-prompt.messages
+# prompt = hub.pull("hwchase17/openai-functions-agent")
+prompt = """
+You are a helpful assistant. Answer the question based on the context provided below. <context>  {context} </context>.I will tip you if you give the answers correctly.
+"""
+
 
 from langchain.agents import initialize_agent
 from langchain.agents.agent_types import AgentType

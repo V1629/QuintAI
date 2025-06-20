@@ -1,16 +1,17 @@
 # query.py
 
-from agent5 import retriever_setup
+from agent3 import responses3
 
 
 
-query = "Name of the author of this book?"
+
+query = "name of the author of this book?"
 
 # Get the retriever object
-retriever = retriever_setup(query)
+retriever = responses3(query)
 
-# Your query
-query = "Name of the author of this book?"
+# # Your query
+# query = "Name of the author of this book?"
 
 # Invoke the retriever
 # result = retriever.invoke(query)

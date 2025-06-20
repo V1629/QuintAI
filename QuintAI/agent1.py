@@ -14,8 +14,18 @@ filtered_chunks = texts[:50]
 ##Vector embedding
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
+import os
 embedding = OllamaEmbeddings(model="nomic-embed-text")
-db = Chroma.from_documents(filtered_chunks, embedding)
+
+persist_directory = "chroma_db"
+
+if os.path.exists(persist_directory) and os.listdir(persist_directory):
+    # Load existing database
+    db = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+else:
+    # Create new database and persist it
+    db = Chroma.from_documents(filtered_chunks, embedding, persist_directory=persist_directory)
+    db.persist()
 
 from langchain_community.llms import Ollama
 llm = Ollama(model="llama3.2")
