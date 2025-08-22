@@ -10,3 +10,6 @@ google-generativeai
 pinecone
 sentence-transformers
 pinecone-text
+flask
+flask-cors
+python-dotenv

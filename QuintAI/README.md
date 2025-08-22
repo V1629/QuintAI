@@ -14,6 +14,21 @@ QuintAI is a multi-agent, multi-model question-answering system that leverages s
 
 ---
 
+## Tech Stack
+
+| Layer         | Technology/Service         | Purpose                                 |
+|---------------|---------------------------|-----------------------------------------|
+| Language      | Python 3.12+              | Main programming language               |
+| LLM Orchestration | LangChain, LangGraph  | Multi-agent, workflow, tool use         |
+| Vector DB     | ChromaDB                  | Document embedding & retrieval          |
+| LLMs          | Ollama, Groq, Gemini      | Language model inference                |
+| Tools         | Wikipedia API (LangChain) | External knowledge retrieval            |
+| Data          | PDF, ChromaDB             | Source and vector storage               |
+| API Keys      | .env, dotenv              | Secure API key management               |
+| Env Mgmt      | venv                      | Dependency isolation                    |
+
+---
+
 ## Project Structure
 
 ```
@@ -113,4 +128,4 @@ The system will:
 - [LangGraph](https://github.com/langchain-ai/langgraph)
 - [Ollama](https://ollama.com/)
 - [Groq](https://groq.com/)
-- [Google Gemini](https://ai.google.dev/gemini-api/docs/)
+- [Google Gemini](https://ai.google.dev/gemini-api/docs/) 

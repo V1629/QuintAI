@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuintAI - Multi-Agent AI Question Answering System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #0a192f;
+            --secondary-blue: #112240;
+            --accent-blue: #64ffda;
+            --text-primary: #ccd6f6;
+            --text-secondary: #8892b0;
+            --gradient-blue: linear-gradient(135deg, #0a192f 0%, #112240 50%, #1e3a8a 100%);
+            --glow-blue: 0 0 20px rgba(100, 255, 218, 0.3);
+            --shadow-blue: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--gradient-blue);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 25, 47, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(100,255,218,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-blue), #4fd1c7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 10px rgba(100, 255, 218, 0.5)); }
+            to { filter: drop-shadow(0 0 20px rgba(100, 255, 218, 0.8)); }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            background: var(--accent-blue);
+            color: var(--primary-blue);
+            box-shadow: var(--glow-blue);
+            transform: translateY(-2px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            background: var(--secondary-blue);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--accent-blue);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--primary-blue);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100, 255, 218, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Tech Stack Section */
+        .tech-stack {
+            padding: 5rem 2rem;
+            background: var(--primary-blue);
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .tech-item {
+            background: var(--secondary-blue);
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(100, 255, 218, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .tech-icon {
+            font-size: 2.5rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+
+        /* Architecture Section */
+        .architecture {
+            padding: 5rem 2rem;
+            background: var(--secondary-blue);
+        }
+
+        .arch-diagram {
+            background: var(--primary-blue);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            margin-top: 2rem;
+        }
+
+        .arch-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .arch-step {
+            background: var(--secondary-blue);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            border: 1px solid rgba(100, 255, 218, 0.3);
+        }
+
+        .arch-arrow {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+        }
+
+        /* Setup Section */
+        .setup {
+            padding: 5rem 2rem;
+            background: var(--primary-blue);
+        }
+
+        .setup-steps {
+            background: var(--secondary-blue);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            margin-top: 2rem;
+        }
+
+        .setup-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--primary-blue);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .step-number {
+            background: var(--accent-blue);
+            color: var(--primary-blue);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            color: #e6e6e6;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin-top: 0.5rem;
+            border: 1px solid #333;
+            overflow-x: auto;
+        }
+
+        /* Demo Section */
+        .demo {
+            padding: 5rem 2rem;
+            background: var(--primary-blue);
+        }
+
+        .demo-input {
+            margin-bottom: 3rem;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .demo-input-field {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid rgba(100, 255, 218, 0.3);
+            border-radius: 10px;
+            background: var(--secondary-blue);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .demo-input-field:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        .demo-input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .demo-submit-btn {
+            padding: 1rem 2rem;
+            background: var(--accent-blue);
+            color: var(--primary-blue);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .demo-submit-btn:hover {
+            background: #4fd1c7;
+            transform: translateY(-2px);
+            box-shadow: var(--glow-blue);
+        }
+
+        .demo-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Workflow Animation */
+        .workflow-animation {
+            margin: 3rem 0;
+        }
+
+        .workflow-steps {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            background: var(--secondary-blue);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .workflow-step.active {
+            border-color: var(--accent-blue);
+            box-shadow: var(--glow-blue);
+            transform: scale(1.02);
+        }
+
+        .workflow-step.completed {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.1);
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1.5rem;
+            color: var(--primary-blue);
+            font-size: 1.2rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .step-status {
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+        }
+
+        .workflow-arrow {
+            text-align: center;
+            color: var(--accent-blue);
+            font-size: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 3rem;
+        }
+
+        .agent-responses {
+            margin-bottom: 3rem;
+        }
+
+        .response-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .response-card {
+            background: var(--secondary-blue);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .response-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: var(--shadow-blue);
+        }
+
+        .response-header {
+            background: var(--primary-blue);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(100, 255, 218, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .response-header i {
+            color: var(--accent-blue);
+        }
+
+        .response-header h5 {
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .response-content {
+            padding: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .response-content.loading {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .judge-decision {
+            margin: 2rem 0;
+        }
+
+        .judge-card {
+            background: var(--secondary-blue);
+            border-radius: 15px;
+            border: 2px solid var(--accent-blue);
+            overflow: hidden;
+        }
+
+        .judge-header {
+            background: var(--accent-blue);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .judge-header i {
+            color: var(--primary-blue);
+        }
+
+        .judge-header h5 {
+            color: var(--primary-blue);
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .judge-content {
+            padding: 1.5rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .demo-actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .try-again-btn {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--accent-blue);
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .try-again-btn:hover {
+            background: var(--accent-blue);
+            color: var(--primary-blue);
+            box-shadow: var(--glow-blue);
+        }
+
+        /* Demo Instructions */
+        .demo-instructions {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--secondary-blue);
+            border-radius: 15px;
+            border: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .instructions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .instruction-number {
+            width: 30px;
+            height: 30px;
+            background: var(--accent-blue);
+            color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .instruction-item p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-blue);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(100, 255, 218, 0.2);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .social-links a {
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .arch-flow {
+                flex-direction: column;
+            }
+
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--accent-blue);
+            z-index: 1001;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator" id="scrollIndicator"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">QuintAI</a>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#tech-stack">Tech Stack</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#demo">Live Demo</a></li>
+                <li><a href="#setup">Setup</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>QuintAI</h1>
+            <p>A revolutionary multi-agent, multi-model question-answering system that leverages cutting-edge AI technologies to provide intelligent, accurate, and comprehensive responses through orchestrated collaboration.</p>
+            <a href="#features" class="cta-button">Explore the Future</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title fade-in">Core Features</h2>
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Multi-Agent Architecture</h3>
+                    <p>Four specialized AI agents working in parallel, each leveraging different LLMs and capabilities to provide diverse perspectives on your questions.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Intelligent Judging</h3>
+                    <p>A sophisticated judge LLM that evaluates all agent responses and selects the most accurate, relevant, and comprehensive answer.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Retrieval-Augmented Generation</h3>
+                    <p>One agent specializes in answering questions based on local PDF documents using advanced vector search and embedding techniques.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h3>Advanced Tool Integration</h3>
+                    <p>Wikipedia integration for real-time information retrieval, ensuring up-to-date and accurate responses to current events and topics.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3>Extensible Framework</h3>
+                    <p>Built with LangChain and LangGraph for easy integration of new agents, models, and tools to expand system capabilities.</p>
+                </div>
+                <div class="feature-card fade-in">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Robust error handling, API key management, and persistent vector storage for consistent and secure operation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section class="tech-stack" id="tech-stack">
+        <div class="container">
+            <h2 class="section-title fade-in">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h4>Python 3.12+</h4>
+                    <p>Core Language</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <h4>LangChain</h4>
+                    <p>LLM Orchestration</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h4>LangGraph</h4>
+                    <p>Multi-Agent Workflows</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h4>ChromaDB</h4>
+                    <p>Vector Database</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-cloud"></i>
+                    </div>
+                    <h4>Ollama</h4>
+                    <p>Local LLM Inference</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Groq</h4>
+                    <p>High-Speed LLM API</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <h4>Google Gemini</h4>
+                    <p>Advanced AI Model</p>
+                </div>
+                <div class="tech-item fade-in">
+                    <div class="tech-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <h4>Wikipedia API</h4>
+                    <p>Knowledge Retrieval</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="architecture" id="architecture">
+        <div class="container">
+            <h2 class="section-title fade-in">System Architecture</h2>
+            <div class="arch-diagram fade-in">
+                <h3>Multi-Agent Workflow</h3>
+                <div class="arch-flow">
+                    <div class="arch-step">
+                        <h4>User Query</h4>
+                        <p>Question input</p>
+                    </div>
+                    <div class="arch-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="arch-step">
+                        <h4>Parallel Processing</h4>
+                        <p>4 agents simultaneously</p>
+                    </div>
+                    <div class="arch-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="arch-step">
+                        <h4>Response Collection</h4>
+                        <p>All answers gathered</p>
+                    </div>
+                    <div class="arch-arrow">
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                    <div class="arch-step">
+                        <h4>Intelligent Judging</h4>
+                        <p>Best answer selected</p>
+                    </div>
+                </div>
+                
+                <h3 style="margin-top: 3rem;">Agent Specializations</h3>
+                <div class="features-grid" style="margin-top: 2rem;">
+                    <div class="feature-card">
+                        <h4>Agent 1: PDF Expert</h4>
+                        <p>Uses Ollama + ChromaDB for document-based Q&A</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Agent 2: Groq Specialist</h4>
+                        <p>Leverages Groq's high-speed LLM for general knowledge</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Agent 3: Wikipedia Tool</h4>
+                        <p>Ollama-powered agent with Wikipedia API access</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>Agent 4: Gemini AI</h4>
+                        <p>Google's advanced AI model for comprehensive responses</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="demo" id="demo">
+        <div class="container">
+            <h2 class="section-title fade-in">🚀 Live Demo - Experience QuintAI</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 3rem; font-size: 1.1rem;">
+                Watch the magic happen! Input your question and see all 5 AI agents work together, then watch the judge select the best answer.
+            </p>
+            
+            <!-- Demo Input Section -->
+            <div class="demo-input fade-in">
+                <div class="input-container">
+                    <input type="text" id="demoQuestion" placeholder="Ask QuintAI anything... (e.g., 'What is artificial intelligence?')" class="demo-input-field">
+                    <button id="demoSubmit" class="demo-submit-btn">
+                        <i class="fas fa-rocket"></i> Ask QuintAI
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workflow Animation -->
+            <div class="workflow-animation fade-in" id="workflowAnimation" style="display: none;">
+                <h3 style="text-align: center; color: var(--accent-blue); margin-bottom: 2rem;">
+                    <i class="fas fa-cogs fa-spin"></i> Processing Your Question...
+                </h3>
+                
+                <div class="workflow-steps">
+                    <div class="workflow-step" data-step="1">
+                        <div class="step-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>User Query</h4>
+                            <p id="userQueryDisplay"></p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="workflow-step" data-step="2">
+                        <div class="step-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Agent 1: PDF Expert</h4>
+                            <p>Processing with Ollama + ChromaDB...</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="workflow-step" data-step="3">
+                        <div class="step-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Agent 2: Groq Specialist</h4>
+                            <p>Processing with Groq LLM...</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="workflow-step" data-step="4">
+                        <div class="step-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Agent 3: Wikipedia Tool</h4>
+                            <p>Searching Wikipedia...</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="workflow-step" data-step="5">
+                        <div class="step-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Agent 4: Gemini AI</h4>
+                            <p>Processing with Google Gemini...</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+
+                    <div class="workflow-arrow">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+
+                    <div class="workflow-step" data-step="6">
+                        <div class="step-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="step-content">
+                            <h4>Judge LLM</h4>
+                            <p>Evaluating all responses...</p>
+                        </div>
+                        <div class="step-status">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section fade-in" id="resultsSection" style="display: none;">
+                <h3 style="text-align: center; color: var(--accent-blue); margin-bottom: 2rem;">
+                    <i class="fas fa-trophy"></i> Results & Analysis
+                </h3>
+                
+                <!-- Individual Agent Responses -->
+                <div class="agent-responses">
+                    <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">Individual Agent Responses:</h4>
+                    
+                    <div class="response-grid">
+                        <div class="response-card" data-agent="agent1">
+                            <div class="response-header">
+                                <i class="fas fa-file-pdf"></i>
+                                <h5>Agent 1: PDF Expert</h5>
+                            </div>
+                            <div class="response-content" id="agent1Response">
+                                <p class="loading">Processing...</p>
+                            </div>
+                        </div>
+
+                        <div class="response-card" data-agent="agent2">
+                            <div class="response-header">
+                                <i class="fas fa-bolt"></i>
+                                <h5>Agent 2: Groq Specialist</h5>
+                            </div>
+                            <div class="response-content" id="agent2Response">
+                                <p class="loading">Processing...</p>
+                            </div>
+                        </div>
+
+                        <div class="response-card" data-agent="agent3">
+                            <div class="response-header">
+                                <i class="fas fa-book"></i>
+                                <h5>Agent 3: Wikipedia Tool</h5>
+                            </div>
+                            <div class="response-content" id="agent3Response">
+                                <p class="loading">Processing...</p>
+                            </div>
+                        </div>
+
+                        <div class="response-card" data-agent="agent4">
+                            <div class="response-header">
+                                <i class="fas fa-gem"></i>
+                                <h5>Agent 4: Gemini AI</h5>
+                            </div>
+                            <div class="response-content" id="agent4Response">
+                                <p class="loading">Processing...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Judge's Decision -->
+                <div class="judge-decision">
+                    <h4 style="color: var(--accent-blue); margin: 2rem 0 1rem 0;">Judge LLM Analysis:</h4>
+                    <div class="judge-card">
+                        <div class="judge-header">
+                            <i class="fas fa-balance-scale"></i>
+                            <h5>Final Decision & Justification</h5>
+                        </div>
+                        <div class="judge-content" id="judgeResponse">
+                            <p class="loading">Evaluating responses...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Try Again Button -->
+                <div class="demo-actions">
+                    <button id="tryAgainBtn" class="try-again-btn">
+                        <i class="fas fa-redo"></i> Ask Another Question
+                    </button>
+                </div>
+            </div>
+
+            <!-- Demo Instructions -->
+            <div class="demo-instructions fade-in">
+                <h4 style="color: var(--accent-blue); margin-bottom: 1rem;">
+                    <i class="fas fa-info-circle"></i> How It Works
+                </h4>
+                <div class="instructions-grid">
+                    <div class="instruction-item">
+                        <div class="instruction-number">1</div>
+                        <p>Type your question in the input field above</p>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">2</div>
+                        <p>Watch as 5 AI agents process your question simultaneously</p>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">3</div>
+                        <p>See individual responses from each specialized agent</p>
+                    </div>
+                    <div class="instruction-item">
+                        <div class="instruction-number">4</div>
+                        <p>Watch the Judge LLM analyze and select the best answer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Setup Section -->
+    <section class="setup" id="setup">
+        <div class="container">
+            <h2 class="section-title fade-in">Quick Setup Guide</h2>
+            <div class="setup-steps fade-in">
+                <div class="setup-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Clone Repository</h4>
+                        <p>Get the latest version of QuintAI</p>
+                        <div class="code-block">git clone https://github.com/V1629/QuintAI<br>cd QuintAI</div>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Install Dependencies</h4>
+                        <p>Set up Python virtual environment and install packages</p>
+                        <div class="code-block">python3 -m venv env<br>source env/bin/activate<br>pip install -r requirements.txt</div>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Download Ollama Models</h4>
+                        <p>Install required local AI models</p>
+                        <div class="code-block">ollama pull llama3.2<br>ollama pull nomic-embed-text</div>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Configure API Keys</h4>
+                        <p>Set up your environment variables</p>
+                        <div class="code-block"># Create .env file with:<br>groq_api_key=YOUR_KEY<br>groq1_api_key=YOUR_KEY<br>gemini_api_key=YOUR_KEY</div>
+                    </div>
+                </div>
+                <div class="setup-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Run the System</h4>
+                        <p>Start QuintAI and ask questions</p>
+                        <div class="code-block">python orchestrator.py</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">QuintAI</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                Revolutionizing question-answering through intelligent multi-agent collaboration
+            </p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p style="color: var(--text-secondary); margin-top: 2rem;">
+                Built with ❤️ using LangChain, LangGraph, and cutting-edge AI technologies
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll indicator
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('scrollIndicator').style.width = scrolled + '%';
+        });
+
+        // Fade in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(10, 25, 47, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(10, 25, 47, 0.95)';
+            }
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const demoSubmit = document.getElementById('demoSubmit');
+            const demoQuestion = document.getElementById('demoQuestion');
+            const workflowAnimation = document.getElementById('workflowAnimation');
+            const resultsSection = document.getElementById('resultsSection');
+            const tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            // Demo submit handler
+            demoSubmit.addEventListener('click', function() {
+                const question = demoQuestion.value.trim();
+                if (!question) {
+                    alert('Please enter a question!');
+                    return;
+                }
+
+                startDemo(question);
+            });
+
+            // Enter key handler
+            demoQuestion.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    demoSubmit.click();
+                }
+            });
+
+            // Try again button
+            tryAgainBtn.addEventListener('click', function() {
+                resetDemo();
+            });
+
+            function startDemo(question) {
+                // Disable submit button
+                demoSubmit.disabled = true;
+                demoSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+                // Show workflow animation
+                workflowAnimation.style.display = 'block';
+                resultsSection.style.display = 'none';
+
+                // Display user question
+                document.getElementById('userQueryDisplay').textContent = question;
+
+                // Start workflow animation
+                animateWorkflow(question);
+            }
+
+            function animateWorkflow(question) {
+                const steps = document.querySelectorAll('.workflow-step');
+                let currentStep = 0;
+
+                function processStep() {
+                    if (currentStep >= steps.length) {
+                        // All steps completed, show results
+                        setTimeout(() => {
+                            showResults(question);
+                        }, 1000);
+                        return;
+                    }
+
+                    const step = steps[currentStep];
+                    
+                    // Activate current step
+                    step.classList.add('active');
+                    
+                    // Simulate processing time
+                    setTimeout(() => {
+                        step.classList.remove('active');
+                        step.classList.add('completed');
+                        
+                        // Update status icon
+                        const statusIcon = step.querySelector('.step-status i');
+                        statusIcon.className = 'fas fa-check-circle';
+                        statusIcon.style.color = '#4ade80';
+                        
+                        // Move to next step
+                        currentStep++;
+                        processStep();
+                    }, 1500);
+                }
+
+                processStep();
+            }
+
+            function showResults(question) {
+                // Hide workflow animation
+                workflowAnimation.style.display = 'none';
+                
+                // Show results section
+                resultsSection.style.display = 'block';
+
+                // Simulate agent responses (in real implementation, these would come from your Python backend)
+                simulateAgentResponses(question);
+            }
+
+            function simulateAgentResponses(question) {
+                // Call the real QuintAI API
+                callQuintAI(question);
+            }
+
+            async function callQuintAI(question) {
+                try {
+                    const response = await fetch('http://localhost:5000/ask', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ question: question })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    displayRealResults(data);
+
+                } catch (error) {
+                    console.error('Error calling QuintAI API:', error);
+                    // Fallback to simulated responses if API is not available
+                    displaySimulatedResponses(question);
+                }
+            }
+
+            function displayRealResults(data) {
+                // Display agent responses
+                const agentResponses = data.agent_responses;
+                
+                agentResponses.forEach((agentData, index) => {
+                    const agentId = `agent${index + 1}Response`;
+                    const element = document.getElementById(agentId);
+                    if (element) {
+                        if (agentData.status === 'success') {
+                            element.innerHTML = `
+                                <p><strong>Response:</strong></p>
+                                <p>${agentData.response}</p>
+                            `;
+                        } else {
+                            element.innerHTML = `
+                                <p><strong>Error:</strong></p>
+                                <p style="color: #ef4444;">${agentData.response}</p>
+                            `;
+                        }
+                    }
+                });
+
+                // Display judge's decision
+                const judgeElement = document.getElementById('judgeResponse');
+                if (judgeElement) {
+                    judgeElement.innerHTML = `
+                        <p><strong>Judge LLM Analysis:</strong></p>
+                        <p>${data.judge_decision}</p>
+                    `;
+                }
+            }
+
+            function displaySimulatedResponses(question) {
+                // Fallback simulated responses if API is not available
+                document.getElementById('agent1Response').innerHTML = `
+                    <p><strong>Response:</strong></p>
+                    <p>Based on the PDF content about Psycho-Cybernetics, ${question.toLowerCase()} relates to the principles of self-image psychology and mental programming. The book discusses how our self-image affects our behavior and success in life.</p>
+                    <p><em>Note: This is a simulated response. Start the API server for real responses.</em></p>
+                `;
+
+                document.getElementById('agent2Response').innerHTML = `
+                    <p><strong>Response:</strong></p>
+                    <p>${question} is a fundamental concept in modern technology and cognitive science. It involves creating systems that can perform tasks typically requiring human intelligence, including learning, reasoning, and problem-solving.</p>
+                    <p><em>Note: This is a simulated response. Start the API server for real responses.</em></p>
+                `;
+
+                document.getElementById('agent3Response').innerHTML = `
+                    <p><strong>Response:</strong></p>
+                    <p>According to Wikipedia, ${question.toLowerCase()} refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. The term was coined in 1956 at a conference at Dartmouth College.</p>
+                    <p><em>Note: This is a simulated response. Start the API server for real responses.</em></p>
+                `;
+
+                document.getElementById('agent4Response').innerHTML = `
+                    <p><strong>Response:</strong></p>
+                    <p>${question} represents the field of computer science focused on creating intelligent machines capable of performing tasks that typically require human cognitive abilities. This includes machine learning, natural language processing, and robotics.</p>
+                    <p><em>Note: This is a simulated response. Start the API server for real responses.</p>
+                `;
+
+                document.getElementById('judgeResponse').innerHTML = `
+                    <p><strong>Best Response Index:</strong> 2</p>
+                    <p><strong>Justification:</strong> Agent 2 (Groq Specialist) provided the most comprehensive and accurate definition of artificial intelligence, covering both the technical aspects and practical applications. The response is clear, well-structured, and directly addresses the question.</p>
+                    <p><strong>Final Answer:</strong> Artificial intelligence is a fundamental concept in modern technology and cognitive science. It involves creating systems that can perform tasks typically requiring human intelligence, including learning, reasoning, and problem-solving.</p>
+                    <p><em>Note: This is a simulated response. Start the API server for real responses.</em></p>
+                `;
+            }
+
+            function resetDemo() {
+                // Reset form
+                demoQuestion.value = '';
+                
+                // Hide sections
+                workflowAnimation.style.display = 'none';
+                resultsSection.style.display = 'none';
+                
+                // Reset workflow steps
+                const steps = document.querySelectorAll('.workflow-step');
+                steps.forEach(step => {
+                    step.classList.remove('active', 'completed');
+                    const statusIcon = step.querySelector('.step-status i');
+                    statusIcon.className = 'fas fa-spinner fa-spin';
+                    statusIcon.style.color = '';
+                });
+                
+                // Reset agent responses
+                document.getElementById('agent1Response').innerHTML = '<p class="loading">Processing...</p>';
+                document.getElementById('agent2Response').innerHTML = '<p class="loading">Processing...</p>';
+                document.getElementById('agent3Response').innerHTML = '<p class="loading">Processing...</p>';
+                document.getElementById('agent4Response').innerHTML = '<p class="loading">Processing...</p>';
+                document.getElementById('judgeResponse').innerHTML = '<p class="loading">Evaluating responses...</p>';
+                
+                // Re-enable submit button
+                demoSubmit.disabled = false;
+                demoSubmit.innerHTML = '<i class="fas fa-rocket"></i> Ask QuintAI';
+            }
+        });
+    </script>
+</body>
+</html> 
