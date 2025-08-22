@@ -1399,7 +1399,12 @@
 
             async function callQuintAI(question) {
                 try {
-                    const response = await fetch('http://localhost:5000/ask', {
+                    // Try production API first, fallback to local
+                    const apiUrl = window.location.hostname === 'localhost' 
+                        ? 'http://localhost:5000/ask'
+                        : 'https://quintai-api.onrender.com/ask';
+                    
+                    const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
