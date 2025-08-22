@@ -4,8 +4,8 @@ services:
     name: quintai-api
     env: python
     plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn api_server:app
+    buildCommand: pip install -r requirements_prod.txt
+    startCommand: gunicorn api_server_prod:app
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
