@@ -1,26 +1,26 @@
-### Agent 3: Wikipedia Tool Agent using Groq (replaced Ollama)
+### Agent 3: Wikipedia Agent (Direct Synthesis to avoid parsing errors)
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-_agent = None
+_llm = None
+_wiki = None
+_prompt = None
 _initialized = False
 
 
 def _initialize():
     """Initialize the Wikipedia agent. Called lazily on first use."""
-    global _agent, _initialized
+    global _llm, _wiki, _prompt, _initialized
 
     if _initialized:
         return True
 
     try:
-        from langchain_community.tools import WikipediaQueryRun
         from langchain_community.utilities import WikipediaAPIWrapper
         from langchain_groq import ChatGroq
-        from langchain_classic.agents import initialize_agent
-        from langchain_classic.agents.agent_types import AgentType
+        from langchain_core.prompts import ChatPromptTemplate
 
         groq_api_key = os.getenv("groq_api_key")
         if not groq_api_key:
@@ -29,18 +29,25 @@ def _initialize():
                 "Please set it in .env file."
             )
 
-        api_wrapper = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=200)
-        wiki_tool = WikipediaQueryRun(api_wrapper=api_wrapper)
-        tools = [wiki_tool]
+        # Initialize the API Wrapper
+        _wiki = WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=1000)
 
-        llm = ChatGroq(groq_api_key=groq_api_key, model_name="Gemma2-9b-It")
+        # Initialize the LLM
+        _llm = ChatGroq(
+            groq_api_key=groq_api_key, 
+            model_name="llama-3.3-70b-versatile",
+            temperature=0.3
+        )
 
-        _agent = initialize_agent(
-            tools=tools,
-            llm=llm,
-            agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
-            verbose=True,
-            handle_parsing_errors=True,
+        _prompt = ChatPromptTemplate.from_template(
+            """Answer the following question based ONLY on the provided Wikipedia context. 
+            If the context doesn't contain the answer, say "I could not find the answer on Wikipedia."
+            
+            Question: {question}
+            
+            Wikipedia Context:
+            {context}
+            """
         )
 
         _initialized = True
@@ -54,8 +61,19 @@ def responses3(query: str) -> str:
     """Answer questions using Wikipedia as a knowledge source."""
     _initialize()
 
-    response = _agent.invoke({"input": query})
-    # Extract 'output' string from the returned dict
-    if isinstance(response, dict) and "output" in response:
-        return response["output"]
+    # Step 1: Directly query Wikipedia
+    try:
+        wiki_context = _wiki.run(query)
+    except Exception as e:
+        return f"Error retrieving Wikipedia data: {e}"
+        
+    if not wiki_context or "No good Wikipedia Search Result" in wiki_context:
+        return "I could not find relevant information on Wikipedia for that query."
+
+    # Step 2: Have the LLM synthesize the answer
+    final_prompt = _prompt.format(question=query, context=wiki_context)
+    response = _llm.invoke(final_prompt)
+    
+    if hasattr(response, "content"):
+        return response.content
     return str(response)

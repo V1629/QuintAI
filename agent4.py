@@ -1,4 +1,4 @@
-# Agent 4: Hugging Face Open Source Model Agent (Replaced Gemini)
+# Agent 4: Open Source Model (DeepSeek/Qwen via Groq)
 import os
 from dotenv import load_dotenv
 
@@ -10,35 +10,34 @@ _initialized = False
 
 
 def _initialize():
-    """Initialize the Hugging Face agent. Called lazily on first use."""
+    """Initialize the DeepSeek agent. Called lazily on first use."""
     global _llm, _prompt, _initialized
 
     if _initialized:
         return True
 
     try:
-        from langchain_community.llms import HuggingFaceEndpoint
+        from langchain_groq import ChatGroq
         from langchain_core.prompts import PromptTemplate
 
-        huggingface_api_key = os.getenv("huggingface_api_key")
-        if not huggingface_api_key:
+        # We can reuse the Groq API key since Groq hosts DeepSeek and Qwen!
+        groq_api_key = os.getenv("groq_api_key")
+        if not groq_api_key:
             raise ValueError(
-                "huggingface_api_key not found in environment variables. "
+                "groq_api_key not found in environment variables. "
                 "Please set it in .env file."
             )
 
-        # Using an open-source model hosted on Hugging Face Serverless Inference API
-        repo_id = "mistralai/Mistral-7B-Instruct-v0.2"
-        
-        _llm = HuggingFaceEndpoint(
-            repo_id=repo_id,
-            huggingfacehub_api_token=huggingface_api_key,
-            temperature=0.7,
-            max_new_tokens=512,
+        # Using DeepSeek-R1 (distilled Llama 70B) hosted on Groq
+        # You could also use "qwen-2.5-32b" here
+        _llm = ChatGroq(
+            groq_api_key=groq_api_key, 
+            model_name="openai/gpt-oss-120b",
+            temperature=0.6,
         )
 
-        template = """<s>[INST] You are a helpful assistant. Answer the following question.
-Question: {question} [/INST]"""
+        template = """You are a helpful assistant. Answer the following question directly and concisely.
+Question: {question}"""
         
         _prompt = PromptTemplate.from_template(template)
 
@@ -46,11 +45,11 @@ Question: {question} [/INST]"""
         return True
 
     except Exception as e:
-        raise RuntimeError(f"Failed to initialize Agent4 (Hugging Face): {e}")
+        raise RuntimeError(f"Failed to initialize Agent4 (DeepSeek): {e}")
 
 
 def responses4(query: str) -> str:
-    """Answer questions using a Hugging Face open source model."""
+    """Answer questions using DeepSeek/Qwen model."""
     _initialize()
 
     final_prompt = _prompt.format(question=query)

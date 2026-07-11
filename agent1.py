@@ -8,7 +8,7 @@ load_dotenv()
 
 # Resolve paths relative to this file
 SCRIPT_DIR = Path(__file__).parent
-PDF_FILE = SCRIPT_DIR / "A Psycho-Cybernetics__-_Maxwell_Maltz.pdf"
+PDF_FILE = SCRIPT_DIR / "The New Psycho-Cybernetics by Maxwell Maltz  (1).pdf"
 PERSIST_DIRECTORY = SCRIPT_DIR / "chroma_db"
 
 # Lazy initialization — nothing runs at import time
@@ -83,7 +83,7 @@ def _initialize():
                 filtered_chunks, embedding, persist_directory=persist_dir
             )
 
-        llm = ChatGroq(groq_api_key=groq_api_key, model_name="Gemma2-9b-It")
+        llm = ChatGroq(groq_api_key=groq_api_key, model_name="llama-3.3-70b-versatile")
 
         prompt = ChatPromptTemplate.from_template(
             """Answer the following question based on the context provided.
