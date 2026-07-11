@@ -1,3 +1,18 @@
+<p align="center">
+  <img src="Gemini_Generated_Image_set494set494set4.png" alt="QuintAI Logo" width="140" />
+</p>
+
+<h1 align="center">QuintAI</h1>
+<p align="center"><i>A full-stack, multi-agent AI app that orchestrates multiple LLMs simultaneously.</i></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/JavaScript-60.7%25-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111827" alt="JavaScript 60.7%" />
+  <img src="https://img.shields.io/badge/Python-31.8%25-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 31.8%" />
+  <img src="https://img.shields.io/badge/CSS-6.2%25-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS 6.2%" />
+  <img src="https://img.shields.io/badge/Multi--Agent-AI-8B5CF6?style=for-the-badge" alt="Multi-Agent AI" />
+  <img src="https://img.shields.io/badge/Full--Stack-Application-0F172A?style=for-the-badge" alt="Full-Stack Application" />
+</p>
+
 # QuintAI
 
 QuintAI is a full-stack, multi-agent, multi-model question-answering application. It leverages a pipeline of diverse LLMs and tools to answer user queries simultaneously, and then uses a judge LLM to select the highest-quality response. 
