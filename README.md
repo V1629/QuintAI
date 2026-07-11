@@ -1,131 +1,113 @@
 # QuintAI
 
-QuintAI is a multi-agent, multi-model question-answering system that leverages several LLMs and tools to answer user queries, then uses a judge LLM to select the best response. It demonstrates orchestration, retrieval-augmented generation, and tool use with LangChain and LangGraph.
+QuintAI is a full-stack, multi-agent, multi-model question-answering application. It leverages a pipeline of diverse LLMs and tools to answer user queries simultaneously, and then uses a judge LLM to select the highest-quality response. 
+
+The project features a highly polished **React + Tailwind CSS** glassmorphism frontend, and a **Flask-based Python backend** that orchestrates the agentic pipeline using **LangChain**.
 
 ---
 
-## Features
+##  Features
 
-- **Multiple Agents:** Each agent uses a different LLM or toolchain (Ollama, Groq, Gemini, Wikipedia).
-- **Retrieval-Augmented Generation:** One agent answers questions based on a local PDF and vector search.
-- **Tool Use:** One agent can query Wikipedia for up-to-date information.
-- **Judging:** A separate LLM ranks and selects the best answer from all agents.
-- **Extensible:** Easily add more agents or swap models.
-
----
-
-## Tech Stack
-
-| Layer         | Technology/Service         | Purpose                                 |
-|---------------|---------------------------|-----------------------------------------|
-| Language      | Python 3.12+              | Main programming language               |
-| LLM Orchestration | LangChain, LangGraph  | Multi-agent, workflow, tool use         |
-| Vector DB     | ChromaDB                  | Document embedding & retrieval          |
-| LLMs          | Ollama, Groq, Gemini      | Language model inference                |
-| Tools         | Wikipedia API (LangChain) | External knowledge retrieval            |
-| Data          | PDF, ChromaDB             | Source and vector storage               |
-| API Keys      | .env, dotenv              | Secure API key management               |
-| Env Mgmt      | venv                      | Dependency isolation                    |
+- **Multi-Agent Orchestration:** Queries are dispatched to multiple expert agents in parallel.
+- **100% Cloud-Based Inference:** No local models required. The entire pipeline runs via lightning-fast Groq API endpoints.
+- **Retrieval-Augmented Generation (RAG):** Agent 1 parses local PDFs, embeds them using ChromaDB's built-in lightweight embeddings, and performs semantic search.
+- **External Knowledge (Tools):** Agent 3 queries Wikipedia's live API to synthesize answers for real-world knowledge.
+- **Judge LLM:** A final evaluator model analyzes all agent responses and algorithmically selects the best one based on relevance, accuracy, and completeness.
+- **Modern UI/UX:** A stunning React frontend built with Vite, featuring custom boid-ecosystem canvas animations, dynamic routing, and glassmorphism design.
 
 ---
 
-## Project Structure
+##  Architecture & Agents
 
-```
-.
-├── agent1.py         # PDF-based retrieval agent (Ollama, ChromaDB)
-├── agent2.py         # Groq LLM agent
-├── agent3.py         # Wikipedia tool agent (Ollama)
-├── agent4.py         # Gemini LLM agent
-├── judgellm.py       # Judge LLM (Groq)
-├── orchestrator.py   # Main orchestrator and CLI entrypoint
-├── requirements.txt  # Python dependencies
-├── A Psycho-Cybernetics__-_Maxwell_Maltz.pdf # Source PDF for agent1
-├── chroma_db/        # Persisted vector database (auto-generated)
-├── .env              # (Not committed) API keys and secrets
-└── .gitignore        # Files/folders to ignore in git
-```
+| Agent | Technology / Model | Purpose |
+|-------|-------------------|---------|
+| **Agent 1 (PDF RAG)** | Groq (Llama 3.3 70B) + ChromaDB | Answers questions based on a provided local PDF document. |
+| **Agent 2 (Generalist)** | Groq (Llama 3.3 70B) | Provides general-purpose knowledge and reasoning. |
+| **Agent 3 (Wikipedia)** | Groq (Llama 3.3 70B) + Wikipedia API | Fetches live data from Wikipedia to answer factual queries. |
+| **Agent 4 (Open Source)** | Groq (DeepSeek-R1 Distill Llama 70B) | Alternative reasoning model using DeepSeek-R1 via Groq. |
+| **Judge LLM** | Groq (Llama 3.3 70B) | Evaluates all 4 responses and selects the optimal answer. |
 
 ---
 
-## Setup
+##  Setup & Installation
 
-### 1. Clone the Repository
+### 1. Backend Setup
+
+It is recommended to use a Python virtual environment.
 
 ```bash
+# Clone the repository
 git clone https://github.com/V1629/QuintAI
 cd QuintAI
-```
 
-### 2. Install Python Dependencies
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-It is recommended to use a virtual environment:
-
-```bash
-python3 -m venv env
-source env/bin/activate
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Download Ollama Models
+### 2. Configure Environment Variables
 
-Make sure you have [Ollama](https://ollama.com/) installed and the required models downloaded:
-- `llama3.2` (for agent1 and agent3)
-- `nomic-embed-text` (for embeddings)
+Create a `.env` file in the project root containing your Groq API key:
+```env
+# Groq API key (free at https://console.groq.com)
+groq_api_key=gsk_your_api_key_here
 
-Example:
-```bash
-ollama pull llama3.2
-ollama pull nomic-embed-text
+# Groq API key for Judge LLM (can be the same key as above)
+groq1_api_key=gsk_your_api_key_here
 ```
 
-### 4. Prepare API Keys
+### 3. Place the Source PDF
+Ensure you have a PDF file in the root directory for Agent 1 to read. By default, the codebase looks for `The New Psycho-Cybernetics by Maxwell Maltz  (1).pdf` (or update the `PDF_FILE` variable in `agent1.py` to match your file).
 
-Create a `.env` file in the project root with your API keys:
-```
-groq_api_key=YOUR_GROQ_API_KEY
-groq1_api_key=YOUR_GROQ_API_KEY_FOR_JUDGE
-gemini_api_key=YOUR_GEMINI_API_KEY
-```
+### 4. Frontend Setup
 
-### 5. Place the PDF
-for the sample , i have placed this pdf : A Psycho-Cybernetics__-_Maxwell_Maltz.pdf
-Ensure the pdf  is present in the project root (already included).
-
----
-
-## Usage
-
-Run the orchestrator:
+In a new terminal window, initialize the React frontend:
 
 ```bash
-python orchestrator.py
+cd frontend
+npm install
 ```
-
-You will be prompted:
-```
-How can I help you?
-```
-Type your question and press Enter.  
-The system will:
-- Query all agents in parallel.
-- Pass their answers to the judge LLM.
-- Print the best answer.
 
 ---
 
-## Notes
+## 💻 Usage
 
-- The first run may take longer as the vector database is built from the PDF. Subsequent runs are faster due to persistence in `chroma_db/`.
-- The judge LLM expects agent answers in a specific format and will output the best response index and justification.
-- All API keys and the `env/`, `chroma_db/`, and PDF files are ignored by git (see `.gitignore`).
+You need to run both the backend API server and the frontend development server simultaneously.
+
+**Terminal 1 (Backend):**
+```bash
+# From the project root
+source .venv/bin/activate
+python api_server.py
+```
+*The Flask server will start on `http://localhost:5000`.*
+
+**Terminal 2 (Frontend):**
+```bash
+# From the frontend/ directory
+npm run dev
+```
+*The Vite frontend will start on `http://localhost:5173` (or `5174`). Open this URL in your browser.*
+
+Click **"Start Querying"** or **"Get Started"** on the landing page to open the query modal and interact with the multi-agent pipeline!
 
 ---
 
-## Acknowledgements
+## 🛠️ Tech Stack
 
-- [LangChain](https://github.com/langchain-ai/langchain)
-- [LangGraph](https://github.com/langchain-ai/langgraph)
-- [Ollama](https://ollama.com/)
-- [Groq](https://groq.com/)
-- [Google Gemini](https://ai.google.dev/gemini-api/docs/) 
+**Frontend:**
+- React 18
+- Vite
+- Tailwind CSS v4
+- Custom Canvas Animations (Boids Ecosystem)
+
+**Backend:**
+- Python 3.12+
+- Flask & Flask-CORS
+- LangChain Core & Community
+- ChromaDB
+- Groq API (`langchain-groq`)
+- Wikipedia API
