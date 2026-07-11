@@ -1,0 +1,24 @@
+env/
+.env
+__pycache__/
+*.pyc
+bm25_values.json
+*.pdf
+chroma_db/
+
+# Python Virtual Environments
+.venv/
+venv/
+*.venv
+
+# Node.js
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.eslintcache
+
+# Mac System Files
+.DS_Store
+
+# Nested duplicate folder
+QuintAI/
