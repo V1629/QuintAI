@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Gemini_Generated_Image_set494set494set4.png" alt="QuintAI Logo" width="140" />
+  <img src="/assets/Gemini_Generated_Image_set494set494set4.png" alt="QuintAI Logo" width="140" />
 </p>
 
 <h1 align="center">QuintAI</h1>
